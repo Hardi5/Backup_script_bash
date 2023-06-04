@@ -1,26 +1,29 @@
 #!/bin/bash
 
+# Prompt for source dir
 read -p "Enter the source directory: " SOURCE_DIR
 
+# Prompt for target dir
 read -p "Enter the target directory: " TARGET_DIR
 
+# Check if target exists locally, if it doesnt prompt for remote details
 if [ ! -d "$TARGET_DIR" ]; then
     echo "Local target doesnt exist, prompting for remote location details"
 
-    # Remote user
+    # Prmopt for remote user
     read -p "Enter the remote user: " REMOTE_USER
 
-    # Prompt for remote host /e.g. 192.168.x.x
+    # Prompt for remote host 
     read -p "Enter the remote host: " REMOTE_HOST
 
     # Prompt for remote path destination
-    read -p "Enter the full remote dir path: " REMOTE_PATH
+    read -p "Enter the remote directory: " REMOTE_DIR
 
     # Creating a timestamp
     TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
 
     # Backup from local directory to remote
-    rsync -avz -e "ssh" "$SOURCE_DIR" "REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/$TIMESTAMP/"
+    rsync -avz -e "ssh" "$SOURCE_DIR" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/$TIMESTAMP/"
 
 else 
     echo "Target exists locally, backing up"
