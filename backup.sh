@@ -1,30 +1,33 @@
 #!/bin/bash
 
-# Set source and target directories and also add a timestamp
-SOURCE_DIR="/mnt/c/users/admin/desktop/root/"
-TARGET_DIR="/mnt/c/users/admin/desktop/backup/"
-TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+read -p "Enter the source directory: " SOURCE_DIR
 
-#Define remote variables
-REMOTE_USER="hardi"
-REMOTE_HOST="192.168.0.32"
-REMOTE_DIR="/home/hardi/"
+read -p "Enter the target directory: " TARGET_DIR
 
-
-# Check if target directory exists locally, if it doesnt, back up to remote(with ssh)
 if [ ! -d "$TARGET_DIR" ]; then
-    echo "Local target directory doesnt exist, backing up to remote location"
+    echo "Local target doesnt exist, prompting for remote location details"
 
-    
-    # Create remote directory if it doesnt already exist
-    # Backup from source directory to remote location
-    rsync -avz /$SOURCE_DIR $REMOTE_USER@$REMOTE_HOST:/$REMOTE_DIR/"$TIMESTAMP"/
+    # Remote user
+    read -p "Enter the remote user: " REMOTE_USER
+
+    # Prompt for remote host /e.g. 192.168.x.x
+    read -p "Enter the remote host: " REMOTE_HOST
+
+    # Prompt for remote path destination
+    read -p "Enter the full remote dir path: " REMOTE_PATH
+
+    # Creating a timestamp
+    TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+
+    # Backup from local directory to remote
+    rsync -avz -e "ssh" "$SOURCE_DIR" "REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/$TIMESTAMP/"
 
 else 
     echo "Target exists locally, backing up"
 
     # Timestamp directory for local destination and then join it with target to equal backup_dir
     TIMESTAMP=$(date +"%Y-%m-%d-%H-%M-%S")
+    
     BACKUP_DIR="$TARGET_DIR/$TIMESTAMP"
 
     # Create the local dir. with timestamp
